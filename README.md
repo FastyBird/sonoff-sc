@@ -17,13 +17,16 @@ Custom firmware for the Sonoff SC slave unit based on ATMega328P.
 
 ### Communication from ATMega328 to ESP8266 master:
 
+```
   AT+UPDATE="humidity":42,"temperature":20,"light":7,"illuminance":150,"noise":3,"dusty":1,"dust":0[1B]
     response: AT+SEND=ok[1B] or AT+SEND=fail[1B]
   AT+STATUS?[1B]
     response: AT+STATUS=4[1B]
+```
 
 ### Communication from ESP8266 master to ATMega328:
 
+```
   AT+DEVCONFIG="uploadFreq":1800,"humiThreshold":2,"tempThreshold":1[1B]
   AT+NOTIFY="uploadFreq":1800,"humiThreshold":2,"tempThreshold":1[1B]
     response: AT+NOTIFY=ok[1B]
@@ -32,21 +35,26 @@ Custom firmware for the Sonoff SC slave unit based on ATMega328P.
   AT+STATUS=4[1B]
   AT+STATUS[1B]
   AT+START[1B]
+```
 
 ### Sequence:
 
+```
  SC master sends:       ATMEGA328P sends:
  AT+START[1B]
                         AT+UPDATE="humidity":42,"temperature":20,"light":7,"illuminance":150,"noise":3,"dusty":1,"dust":0[1B]
  AT+SEND=ok[1B]
                         AT+STATUS?[1B]
  AT+STATUS=4[1B]
+```
 
 ### Microwave sensor
 
 In case microwave is present, ATMega328 will send additional message:
 
+```
   AT+UPDATE="movement":1[1B]
+```
 
 Value in this message could be 0 or 1, when 0 mean no presence detected.
 
