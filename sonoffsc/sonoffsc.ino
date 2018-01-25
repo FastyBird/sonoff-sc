@@ -697,14 +697,14 @@ void _sendData()
     Serial.write(",\"light\":");
     Serial.print(String(_sensors_data[LIGHT_LEVEL_INDEX].value));
 
-    Serial.write(",\"illuminance\":");
-    Serial.print(String(_sensors_data[ILLUMINANCE_INDEX].average_value));
-
     Serial.write(",\"noise\":");
     Serial.print(String(_sensors_data[NOISE_INDEX].value));
 
     Serial.write(",\"dusty\":");
     Serial.print(String(_sensors_data[DUST_LEVEL_INDEX].value));
+
+    Serial.write(",\"illuminance\":");
+    Serial.print(String(_sensors_data[ILLUMINANCE_INDEX].average_value));
 
     Serial.write(",\"dust\":");
     Serial.print(String(_sensors_data[DUST_VALUE_INDEX].average_value));
