@@ -520,11 +520,10 @@ void moveLoop(bool force = false) {
     bool value = readMovement();
 
     if ((force || value != _movement) && _comm_status) {
-        Serial.write("AT+UPDATE=\"movement\":");
-        Serial.print(String(value ? 1 : 0));
+        _movement = value;
 
-        Serial.write(0x1B);
-        Serial.write("\n");
+        _syncData();
+        _sendData();
     }
 
     _movement = value;
@@ -710,7 +709,7 @@ void _sendData()
     Serial.print(String(_sensors_data[DUST_VALUE_INDEX].average_value));
 
     Serial.write(",\"movement\":");
-    Serial.print(String(readMovement() ? 1 : 0));
+    Serial.print(_movement ? 1 : 0));
 
     Serial.write(0x1B);
     Serial.write("\n");
