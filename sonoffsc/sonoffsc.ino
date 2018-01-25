@@ -68,11 +68,11 @@ bool _read_temp_humi_flag = false;
 bool _read_adc_flag = false;
 bool _update_values_flag = false;
 bool _comm_status  = false;
+bool _is_first_update = false;
 
 uint16_t _upload_freq = 1800;
 unsigned long _humi_threshold = 2;
 unsigned long _temp_threshold = 1;
-int8_t _last_temp_humi_average[2] = {0};
 
 bool _movement = false;
 
@@ -226,11 +226,22 @@ void readUart()
         } else if ((index1 = rec_string.indexOf("AT+STATUS=4")) != -1) {
             _comm_status = true;
 
+            if (_is_first_update) {
+                _is_first_update = false;
+
+                _sensors_data[TEMPERATURE_INDEX].last_value = 0;
+                _sensors_data[HUMIDITY_INDEX].last_value = 0;
+            }
+
         } else if ((index1 = rec_string.indexOf("AT+STATUS")) != -1) {
               _comm_status = false;
+              _is_first_update = true;
 
         } else if ((index1 = rec_string.indexOf("AT+START")) != -1) {
               _comm_status = true;
+
+              _sensors_data[TEMPERATURE_INDEX].last_value = 0;
+              _sensors_data[HUMIDITY_INDEX].last_value = 0;
 
         } else {
             // Do nothing
@@ -263,8 +274,8 @@ void transmithData()
 
     } else if (
       _comm_status && (
-        abs(_sensors_data[TEMPERATURE_INDEX].average_value - _last_temp_humi_average[0]) >= _temp_threshold ||
-        abs(_sensors_data[HUMIDITY_INDEX].average_value - _last_temp_humi_average[1]) >= _humi_threshold ||
+        abs(_sensors_data[TEMPERATURE_INDEX].average_value - _sensors_data[TEMPERATURE_INDEX].last_value) >= _temp_threshold ||
+        abs(_sensors_data[HUMIDITY_INDEX].average_value - _sensors_data[HUMIDITY_INDEX].last_value) >= _humi_threshold ||
         _sensors_data[DUST_LEVEL_INDEX].value != _sensors_data[DUST_LEVEL_INDEX].last_value ||
         _sensors_data[DUST_VALUE_INDEX].average_value != _sensors_data[DUST_VALUE_INDEX].last_value ||
         _sensors_data[LIGHT_LEVEL_INDEX].value != _sensors_data[LIGHT_LEVEL_INDEX].last_value ||
@@ -664,13 +675,7 @@ void _syncData()
     uint8_t i = 0;
 
     for (i = 0; i < INDEX_SIZE; i++) {
-        if (i == TEMPERATURE_INDEX) {
-            _last_temp_humi_average[0] = _sensors_data[i].average_value;
-
-        } else if (i == HUMIDITY_INDEX) {
-            _last_temp_humi_average[1] = _sensors_data[i].average_value;
-
-        } else if (i == DUST_VALUE_INDEX || i == ILLUMINANCE_INDEX) {
+        if (i == TEMPERATURE_INDEX || i == HUMIDITY_INDEX || i == DUST_VALUE_INDEX || i == ILLUMINANCE_INDEX) {
             _sensors_data[i].last_value = _sensors_data[i].average_value;
 
         } else {
