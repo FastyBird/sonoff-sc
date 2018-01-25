@@ -1,7 +1,6 @@
 #include <DHT.h>
 #include <MsTimer2.h>
 #include <TimerOne.h>
-#include <Ticker.h>
 
 #define SERIAL_BAUDRATE         19200
 
