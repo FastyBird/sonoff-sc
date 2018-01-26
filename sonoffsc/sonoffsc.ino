@@ -13,7 +13,7 @@
 #define SHARP_READ_PIN          A1
 
 #define DHT_PIN                 6
-#define DHT_TYPE                DHT11
+//#define DHT_TYPE                DHT11
 //#define DHT_TYPE                DHT22
 #define DHT_EXPIRES             60000
 
@@ -56,10 +56,10 @@
 
 typedef struct _sensorDev
 {
-    uint32_t total;
-    uint16_t average_value;
-    int8_t value;
-    int8_t last_value;
+    double total;
+    double average_value;
+    double value;
+    double last_value;
 } sensorDev;
 
 sensorDev _sensors_data[INDEX_SIZE];
@@ -217,7 +217,7 @@ void readUart()
 
             Serial.write("AT+NOTIFY=ok");
             Serial.write(0x1b);
-            Serial.write("\n");
+            // Serial.write("\n");
 
         } else if ((index1 = rec_string.indexOf("AT+SEND=fail")) != -1) {
             _comm_status = false;
@@ -306,7 +306,7 @@ void checkMaster()
 {
     Serial.write("AT+STATUS?");
     Serial.write(0x1b);
-    Serial.write("\n");
+    // Serial.write("\n");
 }
 
 // -----------------------------------------------------------------------------
@@ -389,10 +389,6 @@ void noiseLoop()
     static int16_t _noise_max = -1;
     static int16_t _noise_min = 1025;
 
-    static long sound_vol_avg = 0;
-    static long sound_vol_max = 0;
-    static long sound_vol_rms = 0;
-
     int16_t nosie_value_temp = 0;
             nosie_value_temp = analogRead(MICROPHONE_PIN);
 
@@ -450,7 +446,7 @@ void clapDecode() {
         Serial.print(String(code));
 
         Serial.write(0x1B);
-        Serial.write("\n");
+        // Serial.write("\n");
     }
 
     // reset
@@ -711,7 +707,7 @@ void _sendData()
     Serial.print(_movement ? 1 : 0);
 
     Serial.write(0x1B);
-    Serial.write("\n");
+    // Serial.write("\n");
 }
 
 // -----------------------------------------------------------------------------
