@@ -192,7 +192,6 @@ void updateDeviceConfig(String *rec_string)
 
 void readUart()
 {
-    static bool get_at_flag = false;
     static String rec_string = "";
     int16_t index1;
 
@@ -709,7 +708,7 @@ void _sendData()
     Serial.print(String(_sensors_data[DUST_VALUE_INDEX].average_value));
 
     Serial.write(",\"movement\":");
-    Serial.print(_movement ? 1 : 0));
+    Serial.print(_movement ? 1 : 0);
 
     Serial.write(0x1B);
     Serial.write("\n");
