@@ -13,4 +13,4 @@ install:
     - pip install -U platformio
 
 script:
-    - platformio run
+    - platformio run -e sonoff-sc && platformio run -e sonoff-sc-pro

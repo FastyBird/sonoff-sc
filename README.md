@@ -1,6 +1,6 @@
-# SonoffSC
+# Sonoff SC
 
-Custom firmware for the Sonoff SC slave unit based on ATMega328P.
+Custom firmware for the [Itead Sonoff SC](https://sonoff.itead.cc/en/products/residential/sonoff-sc) environmental unit - sensors part.
 
 [![version](https://badge.fury.io/gh/FastyBird%2Fsonoff-sc.svg)](CHANGELOG.md)
 [![travis](https://travis-ci.org/FastyBird/sonoff-sc.svg?branch=master)](https://travis-ci.org/FastyBird/sonoff-sc)
@@ -8,12 +8,14 @@ Custom firmware for the Sonoff SC slave unit based on ATMega328P.
 
 ## Features
 
-* Fully compatible with original ESP8266 firmware communication protocol
-* Support for new temperature & humidity sensor DHT22
-* **Microwave** based presence detector
+* Fully compatible with original EWeLink firmware
+* Support for two types of temperature and humidity sensors, DHT11 & DHT22
+* Optionally support **Microwave based** presence detector
 * **Clap monitoring** sends info when clapping is detected
 
 ## Documentation
+
+This firmware is only for the slave unit in the Sonoff SC device and could be only uploaded into ATMega328.
 
 ### Communication from ATMega328 to ESP8266 master:
 
@@ -37,20 +39,75 @@ Custom firmware for the Sonoff SC slave unit based on ATMega328P.
   AT+START[1B]
 ```
 
-### Sequence:
+### Communication sequence:
+
+#### Data exchange:
+
+Communication have to be started from the master unit (ESP8266):
 
 ```
- SC master sends:       ATMEGA328P sends:
- AT+START[1B]
-                        AT+UPDATE="humidity":42,"temperature":20,"light":7,"noise":3,"dusty":1,"dust":0,"illuminance":150[1B]
- AT+SEND=ok[1B]
-                        AT+STATUS?[1B]
- AT+STATUS=4[1B]
+AT+START[1B]
 ```
+
+Slave unit will respond with measured values:
+
+```
+AT+UPDATE="humidity":42,"temperature":20,"light":7,"noise":3,"dusty":1,"dust":0,"illuminance":150[1B]
+```
+
+Master have to answer to this response. If data are ok, then:
+
+```
+AT+SEND=ok[1B]
+```
+
+and if received data are not ok, then:
+
+```
+AT+SEND=fail[1B]
+```
+
+#### Connection check:
+
+Slave unit, will in defined periods check the connection to the master. So it will ask master if is ready and receiving:
+
+```
+AT+STATUS?[1B]
+```
+
+Master have to answer with:
+
+```
+AT+STATUS=4[1B]
+```
+
+In case master do not respond to this check connection request, slave will stop transmit data.
+
+### Display levels for measured values
+
+This levels were measured during testing communication between this custom firmware and original EWeLink firmware.
+
+#### Sound level
+
+* **quiet** - for values from **0.00** to **3.00**
+* **normal** - for values from **3.01** to **6.00**
+* **noisy** - for values from **6.01** to **10.00**
+
+#### Light intensity
+
+* **bright** - for values from **0.00** to **4.00**
+* **normal** - for values from **4.01** to **8.00**
+* **dusky** - for values from **8.01** to **10.00**
+
+#### Dust level or Air quality level
+
+* **good** - for values from **0.00** to **4.00**
+* **moderate** - for values from **4.01** to **7.00**
+* **unhealthy** - for values from **7.01** to **10.00**
 
 ### Microwave sensor
 
-In case microwave is present, ATMega328 will send extended data message:
+ case microwave is present, ATMega328 will send extended data message:
 
 ```
   AT+UPDATE="humidity":42,"temperature":20,"light":7,"noise":3,"dusty":1,"dust":0,"illuminance":150,"movement":1[1B]
